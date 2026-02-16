@@ -2,6 +2,22 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+//IMPORTAR ACTIVIDADES
+import 'editActivity.dart';
+import 'attendanceActivity.dart';
+import 'newActivity.dart';
+
+DateTime? parseMongoDate(dynamic fecha) {
+  if (fecha == null) return null;
+
+  if (fecha is String) return DateTime.tryParse(fecha);
+
+  if (fecha is Map && fecha["\$date"] != null) {
+    return DateTime.tryParse(fecha["\$date"]);
+  }
+
+  return null;
+}
 
 class MainMenuAdminView extends StatefulWidget {
   final VoidCallback onLogout;
@@ -22,8 +38,7 @@ class MainMenuAdminView extends StatefulWidget {
 }
 
 class _MainMenuAdminViewState extends State<MainMenuAdminView> {
-
-  List actividades = [];
+  List<Map<String, dynamic>> actividades = [];
   bool loading = false;
   String? error;
 
@@ -39,17 +54,13 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
   /* ---------------- LOAD ---------------- */
 
   Future<void> loadActividades() async {
-
     setState(() {
       loading = true;
       error = null;
     });
 
     try {
-
-      final res = await http.get(
-        Uri.parse("http://10.0.2.2:5000/actividades"),
-      );
+      final res = await http.get(Uri.parse("http://10.0.2.2:5000/actividades"));
 
       if (!mounted) return;
 
@@ -58,17 +69,14 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
       }
 
       setState(() {
-        actividades = jsonDecode(res.body);
+        actividades = List<Map<String, dynamic>>.from(jsonDecode(res.body));
       });
-
     } catch (e) {
-
       if (!mounted) return;
 
       setState(() {
         error = "No se pudieron cargar las actividades";
       });
-
     } finally {
       if (mounted) {
         setState(() => loading = false);
@@ -79,24 +87,20 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
   /* ---------------- SORT ---------------- */
 
   List sortedActividades() {
-
     final list = [...actividades];
 
     if (sortBy == "reserves") {
-
       list.sort((a, b) {
-
-        final diff =
-            a["usuarios"].length.compareTo(b["usuarios"].length);
+        final diff = a["usuarios"].length.compareTo(b["usuarios"].length);
 
         return sortDirection == "desc" ? -diff : diff;
       });
-
     } else {
-
-      list.sort((a, b) =>
-          DateTime.parse(b["createdAt"])
-              .compareTo(DateTime.parse(a["createdAt"])));
+      list.sort(
+        (a, b) => DateTime.parse(
+          b["createdAt"],
+        ).compareTo(DateTime.parse(a["createdAt"])),
+      );
     }
 
     return list;
@@ -116,17 +120,11 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
   /* ---------------- DELETE ---------------- */
 
   Future<void> deleteActivity(String id) async {
-
     try {
-
-      await http.delete(
-        Uri.parse("http://10.0.2.2:5000/actividades/$id"),
-      );
+      await http.delete(Uri.parse("http://10.0.2.2:5000/actividades/$id"));
 
       await loadActividades();
-
     } catch (_) {
-
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -137,20 +135,30 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
 
   /* ---------------- DATE ---------------- */
 
-  String formatDate(String dateString) {
+  String formatDate(dynamic fecha) {
+    final date = parseMongoDate(fecha);
 
-    final date = DateTime.parse(dateString);
+    if (date == null) return "";
 
     return "${date.day.toString().padLeft(2, "0")}/"
         "${date.month.toString().padLeft(2, "0")}/"
         "${date.year}";
   }
 
+  String extractId(dynamic id) {
+    if (id is String) return id;
+
+    if (id is Map && id["\$oid"] != null) {
+      return id["\$oid"];
+    }
+
+    return "";
+  }
+
   /* ---------------- UI ---------------- */
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -161,7 +169,7 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
         child: Column(
           children: [
             _topBar(),
-            Expanded(child: _content())
+            Expanded(child: _content()),
           ],
         ),
       ),
@@ -169,12 +177,10 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
   }
 
   Widget _topBar() {
-
     return Padding(
       padding: const EdgeInsets.only(top: 40, left: 20, right: 20),
       child: Column(
         children: [
-
           const Text(
             "Bienvenido usuario Admin",
             style: TextStyle(color: Colors.white, fontSize: 20),
@@ -185,7 +191,6 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-
               ElevatedButton(
                 onPressed: widget.onLogout,
                 child: const Text("Cerrar sesión"),
@@ -200,19 +205,29 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
 
               const SizedBox(width: 10),
 
-              ElevatedButton(
-                onPressed: widget.onNewActivity,
-                child: const Text("Crear actividad"),
-              ),
+              
             ],
-          )
+          ),
+          Row(mainAxisAlignment: MainAxisAlignment.center,children: [
+            ElevatedButton(
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const NewActivityScreen(),
+                    ),
+                  );
+
+                  loadActividades();
+                },
+                child: const Text("Crear actividad"),
+              ),]),
         ],
       ),
     );
   }
 
   Widget _content() {
-
     if (loading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -233,9 +248,7 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
   }
 
   Widget _activityCard(Map actividad) {
-
-    final full =
-        actividad["usuarios"].length >= actividad["plazasMaximas"];
+    final full = actividad["usuarios"].length >= actividad["plazasMaximas"];
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
@@ -253,13 +266,13 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Text(
                   actividad["nombre"],
                   style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
 
                 Text(
@@ -287,34 +300,53 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
                 ),
 
                 if (full)
-                  const Text("LLENO",
-                      style: TextStyle(color: Colors.red)),
+                  const Text("LLENO", style: TextStyle(color: Colors.red)),
 
                 const SizedBox(height: 10),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-
                     ElevatedButton(
-                      onPressed: () => widget.onEdit(actividad),
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                EditActivityView(actividad: actividad),
+                          ),
+                        );
+
+                        loadActividades();
+                      },
                       child: const Text("Modificar"),
                     ),
 
                     ElevatedButton(
-                      onPressed: () => widget.onAttendance(actividad),
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => AttendanceActivity(
+                              actividad: Map<String, dynamic>.from(actividad),
+                            ),
+                          ),
+                        );
+                        loadActividades();
+                      },
                       child: const Text("Asistencia"),
                     ),
 
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red),
+                        backgroundColor: Colors.red,
+                      ),
                       onPressed: () =>
-                          deleteActivity(actividad["_id"]),
+                          deleteActivity(extractId(actividad["_id"])),
                       child: const Text("Eliminar"),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),

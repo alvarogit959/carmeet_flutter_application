@@ -3,8 +3,15 @@ import 'package:flutter/material.dart';
 import 'login_view.dart';
 import 'newUser.dart';
 import 'mainMenu.dart';
+import 'newActivity.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await initializeDateFormatting('es_ES');
+
   runApp(const MyApp());
 }
 
@@ -20,15 +27,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     Widget currentView;
-    if (user != null) {
-      currentView = MainMenuView(
-        user: user!,
-        onLogout: () {
-          setState(() => user = null);
-        },
-      );
-    }
-    if (user != null && user?["admin"] == "true") {
+//ADMIN
+    if (user != null && user?["admin"] == true) {
       currentView = MainMenuAdminView(
         onLogout: () => setState(() => user = null),
         onNewActivity: () {
@@ -41,6 +41,7 @@ class _MyAppState extends State<MyApp> {
           print("Comprobar asistencia");
         },
       );
+//DEFAULT
     } else if (user != null) {
       currentView = MainMenuView(
         user: user!,
@@ -48,6 +49,7 @@ class _MyAppState extends State<MyApp> {
           setState(() => user = null);
         },
       );
+//NEW LOGIN
     } else if (showRegister) {
       currentView = RegisterView(
         onBack: () {
@@ -55,6 +57,7 @@ class _MyAppState extends State<MyApp> {
         },
       );
     } else {
+//LOGIN
       currentView = LoginView(
         onLogin: (u) {
           setState(() => user = u);

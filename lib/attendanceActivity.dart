@@ -1,47 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class attendanceActivity extends StatelessWidget {
-  final String msg;
-  final Map<String, dynamic>? actividad;
-  final VoidCallback onBack;
+class AttendanceActivity extends StatelessWidget {
+  final Map<String, dynamic> actividad;
 
-  const attendanceActivity({
-    super.key,
-    required this.msg,
-    required this.actividad,
-    required this.onBack,
-  });
+  const AttendanceActivity({super.key, required this.actividad});
+List<Map<String, dynamic>> getUsuariosConAsistencia() {
 
-  List<Map<String, String>> getUsuariosConAsistencia() {
-    if (actividad == null || actividad!["usuarios"] == null) return [];
+  final lista = actividad["usuarios"];
 
-    return List<Map<String, String>>.from(
-      (actividad!["usuarios"] as List).map((u) {
-        final user = u["user"];
-        return {
-          "nombre": user?["nombreCorreo"] ?? user?["_id"] ?? "Usuario",
-          "estado": u["estado"] ?? "desconocido",
-        };
-      }),
-    );
+  if (lista is! List) return [];
+
+  return lista.map<Map<String, dynamic>>((u) {
+
+    return {
+      "nombre": extractUserName(u["user"]),
+      "estado": u["estado"]?.toString() ?? "pendiente",
+    };
+
+  }).toList();
+}
+
+
+String extractUserName(dynamic user) {
+
+  if (user is Map && user["nombreCorreo"] != null) {
+    return user["nombreCorreo"].toString();
   }
 
-  String formatDate(String? dateString) {
-    if (dateString == null) return "";
-    final date = DateTime.tryParse(dateString);
-    if (date == null) return "";
-    return DateFormat("dd/MM/yyyy HH:mm", "es_ES").format(date);
+  if (user is Map && user["\$oid"] != null) {
+    return "Usuario ${user["\$oid"].toString().substring(0, 6)}";
   }
+
+  return "Usuario";
+}
+DateTime? parseMongoDate(dynamic fecha) {
+
+  if (fecha == null) return null;
+
+  if (fecha is String) {
+    return DateTime.tryParse(fecha);
+  }
+
+  if (fecha is Map && fecha["\$date"] != null) {
+    return DateTime.tryParse(fecha["\$date"]);
+  }
+
+  return null;
+}
+
+
+
+
+
+
+String formatDate(dynamic fecha) {
+
+  final date = parseMongoDate(fecha);
+
+  if (date == null) return "";
+
+  return DateFormat("dd/MM/yyyy HH:mm", "es_ES").format(date);
+}
+
+
 
   @override
   Widget build(BuildContext context) {
-    if (actividad == null) {
-      return const Scaffold(
-        body: Center(child: Text("Actividad no disponible")),
-      );
-    }
-
+print("Abriendo asistencia: $actividad");
     final usuarios = getUsuariosConAsistencia();
 
     return Scaffold(
@@ -56,96 +82,94 @@ class attendanceActivity extends StatelessWidget {
             color: Colors.white.withOpacity(0.08),
             border: Border.all(color: Colors.white24),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                msg,
-                style: const TextStyle(fontSize: 22, color: Colors.white),
+
+
+
+
+child: Column(
+  crossAxisAlignment: CrossAxisAlignment.center,
+  children: [
+    const Text(
+      "Gestión de asistencia",
+      style: TextStyle(fontSize: 22, color: Colors.white),
+    ),
+
+    const SizedBox(height: 10),
+
+    const Text(
+      "Comprobar asistencia",
+      style: TextStyle(fontSize: 26, color: Colors.white),
+    ),
+
+    const SizedBox(height: 15),
+
+    Text(
+      "Nombre: ${actividad["nombre"]}",
+      style: const TextStyle(color: Colors.white),
+    ),
+
+    Text(
+      "Descripción: ${actividad["descripcion"] ?? "Sin descripción"}",
+      style: const TextStyle(color: Colors.white),
+    ),
+
+    Text(
+      "Duración: ${actividad["duracion"]} min",
+      style: const TextStyle(color: Colors.white),
+    ),
+
+    Text(
+      "Plazas máximas: ${actividad["plazasMaximas"]}",
+      style: const TextStyle(color: Colors.white),
+    ),
+
+    Text(
+      "Fecha: ${formatDate(actividad["fecha"])}",
+      style: const TextStyle(color: Colors.white),
+    ),
+
+    const SizedBox(height: 20),
+
+    const Text(
+      "Usuarios inscritos:",
+      style: TextStyle(fontSize: 18, color: Colors.white),
+    ),
+
+    const SizedBox(height: 10),
+
+    Expanded(
+      child: ListView.builder(
+        itemCount: usuarios.length,
+        itemBuilder: (context, index) {
+          final usuario = usuarios[index];
+
+          return ListTile(
+            title: Text(
+              usuario["nombre"]?.toString() ?? "Usuario",
+              style: const TextStyle(color: Colors.white),
+            ),
+            trailing: Text(
+              (usuario["estado"]?.toString() ?? "desconocido"),
+              style: TextStyle(
+                color: usuario["estado"] == "asistio"
+                    ? Colors.green
+                    : Colors.red,
               ),
+            ),
+          );
+        },
+      ),
+    ),
 
-              const SizedBox(height: 10),
+    const SizedBox(height: 10),
 
-              Image.asset(
-                "assets/transport.png",
-                height: 80,
-              ),
+    ElevatedButton(
+      onPressed: () => Navigator.pop(context),
+      child: const Text("Atrás"),
+    ),
+  ],
+),
 
-              const SizedBox(height: 10),
-
-              const Text(
-                "Comprobar asistencia",
-                style: TextStyle(fontSize: 26, color: Colors.white),
-              ),
-
-              const SizedBox(height: 15),
-
-              Text(
-                "Nombre: ${actividad!["nombre"]}",
-                style: const TextStyle(color: Colors.white),
-              ),
-
-              Text(
-                "Descripción: ${actividad!["descripcion"] ?? "Sin descripción"}",
-                style: const TextStyle(color: Colors.white),
-              ),
-
-              Text(
-                "Duración: ${actividad!["duracion"]} min",
-                style: const TextStyle(color: Colors.white),
-              ),
-
-              Text(
-                "Plazas máximas: ${actividad!["plazasMaximas"]}",
-                style: const TextStyle(color: Colors.white),
-              ),
-
-              Text(
-                "Fecha: ${formatDate(actividad!["fecha"])}",
-                style: const TextStyle(color: Colors.white),
-              ),
-
-              const SizedBox(height: 20),
-
-              const Text(
-                "Usuarios inscritos:",
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
-
-              const SizedBox(height: 10),
-
-              Expanded(
-                child: ListView.builder(
-                  itemCount: usuarios.length,
-                  itemBuilder: (context, index) {
-                    final usuario = usuarios[index];
-
-                    return ListTile(
-                      title: Text(
-                        usuario["nombre"]!,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      trailing: Text(
-                        usuario["estado"]!,
-                        style: TextStyle(
-                          color: usuario["estado"] == "asistio"
-                              ? Colors.green
-                              : Colors.red,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              ElevatedButton(
-                onPressed: onBack,
-                child: const Text("Atrás"),
-              ),
-            ],
-          ),
         ),
       ),
     );
