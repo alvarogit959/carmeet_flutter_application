@@ -7,11 +7,7 @@ class MainMenuView extends StatefulWidget {
   final Map<String, dynamic> user;
   final VoidCallback onLogout;
 
-  const MainMenuView({
-    super.key,
-    required this.user,
-    required this.onLogout,
-  });
+  const MainMenuView({super.key, required this.user, required this.onLogout});
 
   @override
   State<MainMenuView> createState() => _MainMenuViewState();
@@ -32,8 +28,9 @@ class _MainMenuViewState extends State<MainMenuView> {
   }
 
   bool alreadyIn(Map actividad) {
-    return actividad["usuarios"].any((u) =>
-        u["user"]?["_id"]?.toString() == widget.user["id"]);
+    return actividad["usuarios"].any(
+      (u) => u["user"]?["_id"]?.toString() == widget.user["id"],
+    );
   }
 
   Future<void> toggleJoin(Map actividad) async {
@@ -63,8 +60,9 @@ class _MainMenuViewState extends State<MainMenuView> {
     });
 
     try {
-      final response =
-          await http.get(Uri.parse("http://10.0.2.2:5000/actividades"));
+      final response = await http.get(
+        Uri.parse("http://10.0.2.2:5000/actividades"),
+      );
 
       if (response.statusCode != 200) {
         throw Exception("Error cargando actividades");
@@ -89,8 +87,7 @@ class _MainMenuViewState extends State<MainMenuView> {
 
     if (sortBy == "reserves") {
       list.sort((a, b) {
-        final diff =
-            a["usuarios"].length.compareTo(b["usuarios"].length);
+        final diff = a["usuarios"].length.compareTo(b["usuarios"].length);
 
         return sortDirection == "desc" ? -diff : diff;
       });
@@ -115,16 +112,15 @@ class _MainMenuViewState extends State<MainMenuView> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1a1a1a), Color(0xFF000000)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+          image: DecorationImage(
+            image: AssetImage("assets/icons/test2.png"),
+            fit: BoxFit.fitHeight,
           ),
         ),
         child: Column(
           children: [
             _topBar(),
-            Expanded(child: _content())
+            Expanded(child: _content()),
           ],
         ),
       ),
@@ -134,7 +130,7 @@ class _MainMenuViewState extends State<MainMenuView> {
   Widget _topBar() {
     return Padding(
       padding: const EdgeInsets.only(top: 40, left: 20, right: 20),
-      child: Row(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const Text(
@@ -153,7 +149,7 @@ class _MainMenuViewState extends State<MainMenuView> {
                 child: const Text("Cerrar sesión"),
               ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -178,8 +174,7 @@ class _MainMenuViewState extends State<MainMenuView> {
       itemBuilder: (context, index) {
         final actividad = list[index];
 
-        final full = actividad["usuarios"].length >=
-            actividad["plazasMaximas"];
+        final full = actividad["usuarios"].length >= actividad["plazasMaximas"];
 
         return _activityCard(actividad, full);
       },
@@ -206,9 +201,10 @@ class _MainMenuViewState extends State<MainMenuView> {
                 Text(
                   actividad["nombre"],
                   style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
 
                 const SizedBox(height: 5),
@@ -235,10 +231,7 @@ class _MainMenuViewState extends State<MainMenuView> {
                       style: const TextStyle(color: Colors.white),
                     ),
                     if (full)
-                      const Text(
-                        "LLENO",
-                        style: TextStyle(color: Colors.red),
-                      )
+                      const Text("LLENO", style: TextStyle(color: Colors.red)),
                   ],
                 ),
 
@@ -250,10 +243,9 @@ class _MainMenuViewState extends State<MainMenuView> {
                     onPressed: full && !alreadyIn(actividad)
                         ? null
                         : () => toggleJoin(actividad),
-                    child: Text(
-                        alreadyIn(actividad) ? "Salir" : "Apuntarse"),
+                    child: Text(alreadyIn(actividad) ? "Salir" : "Apuntarse"),
                   ),
-                )
+                ),
               ],
             ),
           ),

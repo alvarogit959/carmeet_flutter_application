@@ -7,11 +7,7 @@ class LoginView extends StatefulWidget {
   final Function(Map<String, dynamic> user) onLogin;
   final VoidCallback onNewUser;
 
-  const LoginView({
-    super.key,
-    required this.onLogin,
-    required this.onNewUser,
-  });
+  const LoginView({super.key, required this.onLogin, required this.onNewUser});
 
   @override
   State<LoginView> createState() => _LoginViewState();
@@ -43,7 +39,6 @@ class _LoginViewState extends State<LoginView> {
 
       final user = jsonDecode(res.body);
       widget.onLogin(user);
-
     } catch (e) {
       setState(() {
         notification = "Error conectando con servidor";
@@ -58,10 +53,9 @@ class _LoginViewState extends State<LoginView> {
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1a1a1a), Color(0xFF000000)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+          image: DecorationImage(
+            image: AssetImage("assets/icons/test2.png"),
+            fit: BoxFit.fitHeight,
           ),
         ),
         child: Center(
@@ -70,7 +64,7 @@ class _LoginViewState extends State<LoginView> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
               child: Container(
-                width: 330,
+                width: 350,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.08),
@@ -84,10 +78,9 @@ class _LoginViewState extends State<LoginView> {
 
                     Text(
                       "CarMeet Club",
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineSmall
-                          ?.copyWith(color: Colors.white),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.headlineSmall?.copyWith(color: Colors.white),
                     ),
 
                     const SizedBox(height: 10),

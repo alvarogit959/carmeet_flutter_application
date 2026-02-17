@@ -49,11 +49,6 @@ DateTime? parseMongoDate(dynamic fecha) {
   return null;
 }
 
-
-
-
-
-
 String formatDate(dynamic fecha) {
 
   final date = parseMongoDate(fecha);
@@ -74,7 +69,7 @@ print("Abriendo asistencia: $actividad");
       backgroundColor: Colors.black,
       body: Center(
         child: Container(
-          width: 480,
+          width: 350,
           height: 640,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(

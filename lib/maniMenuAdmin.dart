@@ -162,10 +162,12 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1a1a1a), Color(0xFF000000)],
+          image: DecorationImage(
+            image: AssetImage("assets/icons/test2.png"),
+            fit: BoxFit.fitHeight,
           ),
         ),
+
         child: Column(
           children: [
             _topBar(),
@@ -192,6 +194,11 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white.withOpacity(0.3),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                ),
                 onPressed: widget.onLogout,
                 child: const Text("Cerrar sesión"),
               ),
@@ -199,17 +206,27 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
               const SizedBox(width: 10),
 
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white.withOpacity(0.3),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                ),
                 onPressed: sortByReserves,
                 child: const Text("Ordenar reservas"),
               ),
 
               const SizedBox(width: 10),
-
-              
             ],
           ),
-          Row(mainAxisAlignment: MainAxisAlignment.center,children: [
-            ElevatedButton(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white.withOpacity(0.3),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                ),
                 onPressed: () async {
                   await Navigator.push(
                     context,
@@ -221,7 +238,9 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
                   loadActividades();
                 },
                 child: const Text("Crear actividad"),
-              ),]),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -308,6 +327,11 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white.withOpacity(0.2),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                      ),
                       onPressed: () async {
                         await Navigator.push(
                           context,
@@ -323,6 +347,11 @@ class _MainMenuAdminViewState extends State<MainMenuAdminView> {
                     ),
 
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white.withOpacity(0.2),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                      ),
                       onPressed: () async {
                         await Navigator.push(
                           context,

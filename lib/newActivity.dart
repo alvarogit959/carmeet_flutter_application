@@ -11,7 +11,6 @@ class NewActivityScreen extends StatefulWidget {
 }
 
 class _NewActivityScreenState extends State<NewActivityScreen> {
-
   final nameController = TextEditingController();
   final descController = TextEditingController();
   final durationController = TextEditingController();
@@ -51,18 +50,15 @@ class _NewActivityScreenState extends State<NewActivityScreen> {
   }
 
   Future<void> createActivity() async {
-
     if (nameController.text.isEmpty ||
         durationController.text.isEmpty ||
         maxUsersController.text.isEmpty ||
         selectedDate == null) {
-
       setState(() => notification = "Completa todos los campos!");
       return;
     }
 
     try {
-
       final res = await http.post(
         Uri.parse("http://10.0.2.2:5000/actividades"),
         headers: {"Content-Type": "application/json"},
@@ -88,7 +84,6 @@ class _NewActivityScreenState extends State<NewActivityScreen> {
         maxUsersController.clear();
         selectedDate = null;
       });
-
     } catch (e) {
       setState(() => notification = "Error conectando con servidor");
     }
@@ -96,104 +91,145 @@ class _NewActivityScreenState extends State<NewActivityScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Container(
-          width: 420,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            color: Colors.white.withOpacity(0.08),
-            border: Border.all(color: Colors.white24),
+      body: Stack(
+        children: [
+          /// Imagen fondo
+          Positioned.fill(
+            child: Image.asset("assets/icons/test2.png", fit: BoxFit.cover),
           ),
 
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
+          /// Overlay oscuro suave (opcional pero recomendable)
+          Positioned.fill(
+            child: Container(color: Colors.black.withOpacity(0.3)),
+          ),
 
-                const Text(
-                  "Crear nueva actividad",
-                  style: TextStyle(fontSize: 26, color: Colors.white),
+          /// Contenido principal
+          Center(
+            child: Container(
+              width: 350,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: Colors.white.withOpacity(0.08),
+                border: Border.all(color: Colors.white24),
+              ),
+
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const Text(
+                      "Crear nueva actividad",
+                      style: TextStyle(fontSize: 26, color: Colors.white),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    //    Image.asset("assets/transport.png", height: 120),
+                    const SizedBox(height: 10),
+
+                    Text(
+                      notification,
+                      style: const TextStyle(color: Colors.redAccent),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    buildInput(nameController, "Nombre actividad"),
+                    buildInput(descController, "Descripción"),
+
+                    const SizedBox(height: 10),
+
+                    //FECHA
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white.withOpacity(0.2),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                        ),
+                        onPressed: pickDateTime,
+                        child: Text(
+                          selectedDate == null
+                              ? "Seleccionar fecha"
+                              : DateFormat(
+                                  "dd/MM/yyyy HH:mm",
+                                ).format(selectedDate!),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    buildInput(
+                      durationController,
+                      "Duración minutos",
+                      isNumber: true,
+                    ),
+
+                    buildInput(
+                      maxUsersController,
+                      "Plazas máximas",
+                      isNumber: true,
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white.withOpacity(0.2),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                        ),
+                        onPressed: createActivity,
+                        child: const Text("Crear"),
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white.withOpacity(0.2),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("Atrás"),
+                      ),
+                    ),
+                  ],
                 ),
-
-                const SizedBox(height: 10),
-
-            //    Image.asset("assets/transport.png", height: 120),
-
-                const SizedBox(height: 10),
-
-                Text(
-                  notification,
-                  style: const TextStyle(color: Colors.redAccent),
-                ),
-
-                const SizedBox(height: 10),
-
-                buildInput(nameController, "Nombre actividad"),
-                buildInput(descController, "Descripción"),
-
-                const SizedBox(height: 10),
-
-                /// FECHA
-                ElevatedButton(
-                  onPressed: pickDateTime,
-                  child: Text(
-                    selectedDate == null
-                        ? "Seleccionar fecha"
-                        : DateFormat("dd/MM/yyyy HH:mm")
-                            .format(selectedDate!),
-                  ),
-                ),
-
-                const SizedBox(height: 10),
-
-                buildInput(durationController, "Duración minutos",
-                    isNumber: true),
-
-                buildInput(maxUsersController, "Plazas máximas",
-                    isNumber: true),
-
-                const SizedBox(height: 20),
-
-                ElevatedButton(
-                  onPressed: createActivity,
-                  child: const Text("Crear"),
-                ),
-
-                const SizedBox(height: 10),
-
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("Atrás"),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget buildInput(TextEditingController controller, String hint,
-      {bool isNumber = false}) {
-
+  Widget buildInput(
+    TextEditingController controller,
+    String hint, {
+    bool isNumber = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: TextField(
         controller: controller,
-        keyboardType:
-            isNumber ? TextInputType.number : TextInputType.text,
+        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: const TextStyle(color: Colors.white70),
           filled: true,
           fillColor: Colors.white.withOpacity(0.1),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         ),
       ),
     );

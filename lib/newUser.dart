@@ -76,10 +76,9 @@ class _RegisterViewState extends State<RegisterView> {
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1a1a1a), Color(0xFF000000)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+          image: DecorationImage(
+            image: AssetImage("assets/icons/test2.png"),
+            fit: BoxFit.fitHeight,
           ),
         ),
         child: Center(
@@ -88,7 +87,7 @@ class _RegisterViewState extends State<RegisterView> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
               child: Container(
-                width: 330,
+                width: 350,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.08),

@@ -6,17 +6,13 @@ import 'package:http/http.dart' as http;
 class EditActivityView extends StatefulWidget {
   final Map actividad;
 
-  const EditActivityView({
-    super.key,
-    required this.actividad,
-  });
+  const EditActivityView({super.key, required this.actividad});
 
   @override
   State<EditActivityView> createState() => _EditActivityViewState();
 }
 
 class _EditActivityViewState extends State<EditActivityView> {
-
   final nameController = TextEditingController();
   final descController = TextEditingController();
   final durationController = TextEditingController();
@@ -42,20 +38,19 @@ class _EditActivityViewState extends State<EditActivityView> {
     }
   }
 
-  /* ---------------- UPDATE ---------------- */
+  // UPDATE
 
   Future<void> updateActivity() async {
-
     try {
-
       final res = await http.put(
-        Uri.parse("http://10.0.2.2:5000/actividades/${widget.actividad["_id"]}"),
+        Uri.parse(
+          "http://10.0.2.2:5000/actividades/${widget.actividad["_id"]}",
+        ),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "nombre": nameController.text,
           "descripcion": descController.text,
-          "fecha": selectedDate?.toIso8601String() ??
-              widget.actividad["fecha"],
+          "fecha": selectedDate?.toIso8601String() ?? widget.actividad["fecha"],
           "duracion": int.tryParse(durationController.text) ?? 0,
           "plazasMaximas": int.tryParse(maxUsersController.text) ?? 0,
         }),
@@ -72,7 +67,6 @@ class _EditActivityViewState extends State<EditActivityView> {
       await Future.delayed(const Duration(milliseconds: 800));
 
       if (mounted) Navigator.pop(context);
-
     } catch (e) {
       setState(() {
         notification = "Error al actualizar";
@@ -80,10 +74,9 @@ class _EditActivityViewState extends State<EditActivityView> {
     }
   }
 
-  /* ---------------- DATE PICKER ---------------- */
+  // DATE Selector
 
   Future<void> pickDate() async {
-
     final now = DateTime.now();
 
     final date = await showDatePicker(
@@ -123,18 +116,17 @@ class _EditActivityViewState extends State<EditActivityView> {
         "${d.minute.toString().padLeft(2, "0")}";
   }
 
-  /* ---------------- UI ---------------- */
-
+  //UI
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1a1a1a), Color(0xFF000000)],
+          image: DecorationImage(
+            image: AssetImage("assets/icons/test2.png"),
+            fit: BoxFit.fitHeight,
           ),
         ),
         child: Center(
@@ -153,13 +145,9 @@ class _EditActivityViewState extends State<EditActivityView> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-
                       const Text(
                         "Editar actividad",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                        ),
+                        style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
 
                       const SizedBox(height: 10),
@@ -181,19 +169,30 @@ class _EditActivityViewState extends State<EditActivityView> {
                       _dateButton(),
                       const SizedBox(height: 12),
 
-                      _input(durationController, "Duración (min)",
-                          isNumber: true),
+                      _input(
+                        durationController,
+                        "Duración (min)",
+                        isNumber: true,
+                      ),
 
                       const SizedBox(height: 12),
 
-                      _input(maxUsersController, "Plazas máximas",
-                          isNumber: true),
+                      _input(
+                        maxUsersController,
+                        "Plazas máximas",
+                        isNumber: true,
+                      ),
 
                       const SizedBox(height: 20),
 
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white.withOpacity(0.2),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                          ),
                           onPressed: updateActivity,
                           child: const Text("Guardar cambios"),
                         ),
@@ -207,7 +206,7 @@ class _EditActivityViewState extends State<EditActivityView> {
                           onPressed: () => Navigator.pop(context),
                           child: const Text("Atrás"),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -219,15 +218,15 @@ class _EditActivityViewState extends State<EditActivityView> {
     );
   }
 
-  /* ---------------- WIDGETS ---------------- */
 
-  Widget _input(TextEditingController controller, String hint,
-      {bool isNumber = false}) {
-
+  Widget _input(
+    TextEditingController controller,
+    String hint, {
+    bool isNumber = false,
+  }) {
     return TextField(
       controller: controller,
-      keyboardType:
-          isNumber ? TextInputType.number : TextInputType.text,
+      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         hintText: hint,
@@ -243,13 +242,9 @@ class _EditActivityViewState extends State<EditActivityView> {
   }
 
   Widget _dateButton() {
-
     return SizedBox(
       width: double.infinity,
-      child: OutlinedButton(
-        onPressed: pickDate,
-        child: Text(formatDate()),
-      ),
+      child: OutlinedButton(onPressed: pickDate, child: Text(formatDate())),
     );
   }
 }
