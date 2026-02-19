@@ -30,3 +30,9 @@ Presiona F5 start debugging
 Con esto debería de abrirse la app correctamente en el emulador.
 Esta app en estructura y visualmente es practicamente la misma que la de vue, siendo simplemente adaptada para Flutter.
 Dentro de la documentación de Vue esta la documentación completa de uso, siendo la misma.
+
+## Errores encontrados:
+Esta parte del trabajo fue mucho mas sencilla debido a que ya tenía la base de datos de Mongo creada correctamente y el server, teniendo que adaptar las funciones y el diseño a app movil. 
+El problema mas grande que me encontré fue adaptar la lectura de fechas y horas para que lo lea correctamente, dando numerosos errores e incluso subiendo elementos corruptos a la base de datos.
+En tema visual fue sencillo debido a que sabía exactamente que estructura utilizar, siendo la misma que la de escritorio pero ajustada. Errores fueron principalmente por elementos que fueron dificiles de adaptar,
+siendo complicado añadir el fondo correctamente. La app tiene un bug en el cual aparecen artefactos, solo pasa en el ordenador de clase y no en el mio, desactivndo impeller lo arregla.
