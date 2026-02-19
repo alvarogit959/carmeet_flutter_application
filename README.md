@@ -1,32 +1,32 @@
 # carmeet_flutter_application
 
-A new Flutter project.
 
-## Getting Started
+## Elementos base 
+Primero hay que instalar las dependencias:
+npm install
+npm install bcrypt 
+npm install flutter  
+Instalar correctamente la SDK y los elementos dentro de la carpeta del proyecto.
+Tras ello deberia de lanzarse la app correctamente
+Tras ello hay que instalar Flutter
+## Run de la app 
+El primer paso es iniciar el server, que lo guardé dentro del proyecto de vue, recomiendo ver ese documento primero. Para lanzar el server hay que lanzarla dentro de su carpeta con:
 
-This project is a starting point for a Flutter application.
+node .\serverVueElectron.js
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
-
-
-
-GUIA: https://docs.flutter.dev/install/quick
+Para lanzar la app correctamente primero hay que abrir el proyecto en Visual Studio y abrir el Emulador en Android Studio,
+tras ello usar:
 
 flutter pub get
 
+Si la app muestra artefactos usar este comando!:
 
-
-//SI ARTEFACTOS!!!
 flutter run --no-enable-impeller
 
+Tras ello dentro de main.dart preferiblemente:
 
-F5 start debugging
+Presiona F5 start debugging
+
+Con esto debería de abrirse la app correctamente en el emulador.
+Esta app en estructura y visualmente es practicamente la misma que la de vue, siendo simplemente adaptada para Flutter.
+Dentro de la documentación de Vue esta la documentación completa de uso, siendo la misma.
